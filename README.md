@@ -3,7 +3,7 @@
 Turn your tab key into the meta key (a.k.a. win key or OS key) when chorded
 to another key (on key release only).
 
-Forked and modified from [`space2meta`].
+Forked and modified from [`space2meta`] and [`caps2esc`].
 
 ## Dependencies
 
@@ -12,7 +12,7 @@ Forked and modified from [`space2meta`].
 ## Building
 
 ```
-$ git clone git@gitlab.com:interception/linux/plugins/tab2meta.git
+$ git clone git@github.com:HactarCE/tab2meta.git
 $ cd tab2meta
 $ cmake -Bbuild
 $ cmake --build build
