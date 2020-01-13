@@ -6,11 +6,11 @@
 
 // clang-format off
 const struct input_event
-space_up        = {.type = EV_KEY, .code = KEY_SPACE,    .value = 0},
+tab_up          = {.type = EV_KEY, .code = KEY_TAB,      .value = 0},
 meta_up         = {.type = EV_KEY, .code = KEY_LEFTMETA, .value = 0},
-space_down      = {.type = EV_KEY, .code = KEY_SPACE,    .value = 1},
+tab_down        = {.type = EV_KEY, .code = KEY_TAB,      .value = 1},
 meta_down       = {.type = EV_KEY, .code = KEY_LEFTMETA, .value = 1},
-space_repeat    = {.type = EV_KEY, .code = KEY_SPACE,    .value = 2},
+tab_repeat      = {.type = EV_KEY, .code = KEY_TAB,      .value = 2},
 meta_repeat     = {.type = EV_KEY, .code = KEY_LEFTMETA, .value = 2},
 syn             = {.type = EV_SYN, .code = SYN_REPORT,   .value = 0};
 // clang-format on
@@ -30,9 +30,9 @@ void write_event(const struct input_event *event) {
 }
 
 int main(void) {
-    int space_is_meta = 0;
+    int tab_is_meta = 0;
     struct input_event input, key_down, key_up, key_repeat;
-    enum { START, SPACE_HELD, KEY_HELD } state = START;
+    enum { START, TAB_HELD, KEY_HELD } state = START;
 
     setbuf(stdin, NULL), setbuf(stdout, NULL);
 
@@ -47,27 +47,27 @@ int main(void) {
 
         switch (state) {
             case START:
-                if (space_is_meta) {
+                if (tab_is_meta) {
                     if (input.code == KEY_SPACE) {
                         input.code = KEY_LEFTMETA;
                         if (input.value == 0)
-                            space_is_meta = 0;
+                            tab_is_meta = 0;
                     }
                     write_event(&input);
                 } else {
-                    if (equal(&input, &space_down) ||
-                        equal(&input, &space_repeat)) {
-                        state = SPACE_HELD;
+                    if (equal(&input, &tab_down) ||
+                        equal(&input, &tab_repeat)) {
+                        state = TAB_HELD;
                     } else {
                         write_event(&input);
                     }
                 }
                 break;
-            case SPACE_HELD:
-                if (equal(&input, &space_down) || equal(&input, &space_repeat))
+            case TAB_HELD:
+                if (equal(&input, &tab_down) || equal(&input, &tab_repeat))
                     break;
                 if (input.value != 1) {
-                    write_event(&space_down);
+                    write_event(&tab_down);
                     write_event(&syn);
                     usleep(20000);
                     write_event(&input);
@@ -81,15 +81,15 @@ int main(void) {
                 }
                 break;
             case KEY_HELD:
-                if (equal(&input, &space_down) || equal(&input, &space_repeat))
+                if (equal(&input, &tab_down) || equal(&input, &tab_repeat))
                     break;
                 if (equal(&input, &key_down) || equal(&input, &key_repeat))
                     break;
                 if (equal(&input, &key_up)) {
                     write_event(&meta_down);
-                    space_is_meta = 1;
+                    tab_is_meta = 1;
                 } else {
-                    write_event(&space_down);
+                    write_event(&tab_down);
                 }
                 write_event(&syn);
                 usleep(20000);
